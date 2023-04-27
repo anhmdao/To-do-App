@@ -1,28 +1,24 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Input, Button, Select, List, Radio, Tag } from "antd";
+import SearchTask from "../component/SearchTask";
+import StatusTask from "../component/StatusTask";
+import PriorityTask from "../component/PriorityTask";
 
 const { Option } = Select;
-
 const priorities = ["Low", "Medium", "High"];
 const priorityColors = [
   { key: "Low", color: "gray" },
   { key: "Medium", color: "blue" },
   { key: "High", color: "red" },
 ];
-const statuses = [
-  { label: "All", value: "All" },
-  { label: "Completed", value: "Completed" },
-  { label: "Todo", value: "Todo" },
-];
-
 const initTasks = [
   { id: 1, name: "Learn Yoga", completed: false, priority: "Medium" },
   { id: 2, name: "Learn English", completed: true, priority: "High" },
   { id: 3, name: "Learn JS", completed: false, priority: "Low" },
 ];
 
-const Todo = () => {
+const Todo = ({onPriorityFilterChange, onSearchChange, onStatusFilterChange}) => {
   const [tasks, setTasks] = useState(initTasks);
   const [inputValue, setInputValue] = useState("");
   const [priority, setPriority] = useState("Low");
@@ -52,18 +48,6 @@ const Todo = () => {
     setInputValue("");
   };
 
-  const handleSearchChange = (event) => {
-    setSearchValue(event.target.value.toLowerCase());
-  };
-
-  const handleStatusFilterChange = (e) => {
-    setStatusFilter(e.target.value);
-  };
-
-  const handlePriorityFilterChange = (value) => {
-    setPriorityFilter(value);
-  };
-
   const handleTaskClick = (id) => {
     const updatedTasks = tasks.map((task) => {
       if (task.id === id) {
@@ -74,30 +58,6 @@ const Todo = () => {
     setTasks(updatedTasks);
   };
 
-  // const filteredTasks = tasks.filter((task) => {
-  //   const statusMatch =
-  //     statusFilter === "All"
-  //       ? true
-  //       : task.completed === (statusFilter === "Completed");
-  //   // const statusMatch = task.filter((task) => {
-  //   //   if (statusFilter === 'All') {
-  //   //     return true;
-  //   //   }
-  //   //   if (statusFilter === 'Completed') {
-  //   //     return task.completed;
-  //   //   }
-  //   //   if (statusFilter === 'To do') {
-  //   //     return !task.completed;
-  //   //   }
-  //   //   return false;
-  //   // });
-  //   const priorityMatch =
-  //     priorityFilter === "All"
-  //       ? true
-  //       : task.priority === priorityFilter.toLowerCase();
-  //   const searchMatch = task.name.toLowerCase().includes(searchValue);
-  //   return statusMatch && priorityMatch && searchMatch;
-  // });
   const filteredTasks = tasks.filter((task) => {
     if (statusFilter === "All") {
       return priorityFilter.length
@@ -126,59 +86,15 @@ const Todo = () => {
         TODO APP
       </h1>
 
-      {/* Seach task  */}
-      <div style={{ marginBottom: "16px" }}>
-        <h4>Search:</h4>
-        <Input.Search
-          placeholder="Search tasks"
-          value={searchValue}
-          onChange={handleSearchChange}
-          enterButton
-        />
-      </div>
-
-      {/* Status task */}
-      {/* <div style={{ marginBottom: '16px' }}>
-        <h3>Filter by status:</h3>
-        <Radio.Group options={statuses} value={statusFilter} onChange={handleStatusFilterChange}>
-          <Radio value="All">All</Radio>
-          <Radio value="Completed">Completed</Radio>
-          <Radio value="To do">Todo</Radio>
-        </Radio.Group>
-      </div> */}
-      <div style={{ marginBottom: "16px" }}>
-        <h4>Filter by status:</h4>
-        <Radio.Group
-          options={statuses}
-          value={statusFilter}
-          onChange={handleStatusFilterChange}
-        />
-      </div>
-
-      {/* Priority task */}
-      <div style={{ marginBottom: "16px" }}>
-        <h4>Filter by priority:</h4>
-        <Select
-          mode="multiple"
-          allowClear
-          placeholder="Please select"
-          style={{ width: "100%" }}
-          value={priorityFilter}
-          onChange={handlePriorityFilterChange}
-        >
-          {priorities.map((priority) => (
-            <Option key={priority} value={priority}>
-              <Tag
-                color={
-                  priorityColors.find((pri) => priority === pri.key)?.color
-                }
-              >
-                {priority}
-              </Tag>
-            </Option>
-          ))}
-        </Select>
-      </div>
+      <SearchTask onChangeImage={() => {
+          onSearchChange(e.target.value.toLowerCase());
+        }}/>
+      <StatusTask onStatusFilterChange={() =>{
+         onStatusFilterChange(e.target.value);
+      }}/>
+      <PriorityTask onPriorityFilterChange={() =>{
+        onPriorityFilterChange(value);
+      }}/>
 
       <List
         bordered
